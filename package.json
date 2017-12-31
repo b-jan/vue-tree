@@ -14,7 +14,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "konva": "^1.7.6",
     "vue": "^2.5.2",
+    "vue-konva": "^1.0.4",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

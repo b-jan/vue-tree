@@ -7,14 +7,14 @@
       @dragend="handleDragend"
     >
       <v-layer ref="layer">
-        <v-path
-          :config="configCircle"
+        <v-shape
+          :config="configCore"
         >
-        </v-path>
+        </v-shape>
         <v-path
-          v-for="item in list"
-          :key="item.id"
-          :config="item"
+          v-for="leafConfig in leafPaths"
+          :key="leafConfig.id"
+          :config="leafConfig"
         >
         </v-path>
       </v-layer>
@@ -24,45 +24,42 @@
 </template>
 
 <script>
-  const width = window.innerWidth
-  const height = window.innerHeight
+  const windowWidth = window.innerWidth
+  const windowHeight = window.innerHeight
+  const degToRad = Math.PI / 180
+  const wid = windowWidth / 1.8
+  const hei = windowHeight / 1.8 + 10
+  const seasons = ['spring', 'summer', 'fall']
+  let season = seasons[Math.floor(Math.random() * seasons.length)]
+
   let vm = {}
 
   export default {
     data () {
       return {
-        list: [],
+        leafPaths: [],
         configKonva: {
-          width: width,
-          height: height
+          width: windowWidth,
+          height: windowHeight
         },
-        configCircle: {
-          x: 500,
-          y: 50,
-          data: 'M496.032,173.518c-15.696,8.434-22.208,24.676-19.891,43.774c0.698,5.732-2.215,14.708-6.581,17.789    c-27.34,19.278-55.243,37.813-83.644,55.488c-10.73,6.68-16.002,2.962-17.646-9.747c-0.562-4.341-0.285-8.809-0.175-13.215    c0.611-23.799,2.378-47.634,1.595-71.384c-0.273-8.242,1.212-15.243,4.162-21.42c16.189-9.4,33.247-16.503,51.334-21.363    c13.477,11.901,31.404,14.235,46.892,5.235c16.989-9.874,23.925-30.527,16.54-49.25c-6.716-17.026-25.292-26.924-43.966-23.419    c-20.041,3.757-31.995,19.343-31.849,40.71c0.024,3.586-0.922,7.181-1.791,10.771c-16.397,5.1-32.077,12.036-46.952,20.738    c-5.35,1.012-9.833,0.751-14.02-0.934c-6.499-6.883-13.003-13.766-19.502-20.649c14.182-24.264,13.7-41.959-1.559-56.741    c-13.076-12.664-33.248-14.692-48.797-4.9c-15.802,9.947-22.293,29.943-15.479,47.671c7.438,19.351,19.792,24.896,52.146,21.869    c9.686,10.253,19.372,20.51,29.058,30.763c6.1,11.273,10.515,23.276,11.175,36.749c0.367,7.421,0.437,14.868,0.331,22.317    c-27.026-18.694-54.183-37.222-80.956-56.275c-30.123-21.44-59.434-49.213-63.823-87.618c6.14-1.461,11.991-4.19,17.152-8.511    c4.415-3.696,7.768-7.785,10.171-12.101c3.354-3.084,5.659-7.499,5.896-13.285c1.016-24.904-14.146-44.166-36.316-53.489    c-18.409-7.74-38.613-0.008-52.62,12.75c-0.743,0.478-1.313,1.069-1.787,1.718c-2.411,2.366-4.643,4.859-6.585,7.458    c-2.913,3.893-3.403,8.776-2.289,13.383c-4.415,26.899,23.224,50.865,51.082,53.17c3.97,33.921,23.701,60.608,49.221,82.734    c33.313,28.882,72.494,52.122,108.675,77.206c0.538,0.375,1.073,0.653,1.604,0.869c-0.466,9.445-1.131,18.886-1.856,28.295    c-1.645,21.241-5.867,41.707-13.313,61.07c-5.626-4.137-9.923-9.837-12.497-16.442c12.575-9.237,14.859-26.088,8.564-39.642    c-6.296-13.558-24.844-18.548-38.03-13.721c-11.392,4.17-18.152,14.631-18.515,25.721c-1.359,8.396,1.403,17.274,7.381,24.365    c5.373,6.377,13.811,9.273,22.207,9.147c4.296,11.869,12.452,21.714,22.986,28.319c-3.949,7.728-8.478,15.247-13.659,22.529    c-12.848,18.046-24.941,20.258-39.968,4.357c-18.413-19.481-35.157-40.612-51.734-61.726c-6.928-8.825-7.801-19.311-5.834-29.87    c0.853-1.783,1.701-3.566,2.554-5.345c31.962-2.742,45.365-11.119,49.502-30.543c3.978-18.674-4.227-36.781-20.265-44.729    c-6.324-3.133-13.432-4.463-20.372-4.092c-19.082-1.338-36.316,13.452-42.118,30.641c-5.182,15.353,3.052,31.942,16.185,39.996    c-2.068,4.333-4.137,8.666-6.206,12.999c-3.692,0.013-7.915-1.689-11.946-5.21c-13.9-12.143-25.994-26.398-40.135-38.218    c-11.13-9.306-17.765-19.821-20.449-31.661c4.268-20.021,8.54-40.041,12.807-60.062c1.657-0.841,3.529-1.571,5.753-2.163    c24.745-6.569,35.137-35.81,21.832-57.789c-8.344-13.782-23.668-20.869-39.511-18.266c-17.658,2.901-29.323,14.076-33.007,31.616    c-3.296,15.708,3.986,31.583,18.005,41.061c2.231,1.506,5.08,3.554,7.274,5.643c-4.443,20.837-8.886,41.673-13.329,62.51    c-3.77-1.179-7.564-2.236-11.412-3.031c-3.717-26.712-13.109-38.613-31.697-41.384c-19.156-2.855-36.512,6.173-43.538,22.652    c-7.291,17.095-2.379,36.459,12.077,47.609c16.304,12.575,31.053,10.461,58.421-10.241c5.353,1.032,10.612,2.542,15.79,4.468    c15.133,13.513,30.38,27.173,45.798,40.723c42.627,37.463,76.063,81.592,100.707,132.106    c-41.555-6.274-78.226-31.489-98.887-68.997c3.513-3.048,6.573-6.695,8.96-10.856c9.596-16.757,1.044-38.308-14.525-47.639    c-4.248-2.546-8.654-3.9-13.089-4.345c-3.337-1.522-6.94-2.444-10.686-2.554c-13.619-0.404-24.884,7.099-30.73,18.769    c-1.938,1.057-3.517,2.872-4.141,5.766c-0.033,0.154-0.049,0.313-0.082,0.469c-1.636,2.525-1.767,5.263-0.951,7.703    c-0.71,16.707,7.667,31.905,23.787,39.307c8.025,3.685,16.544,4.198,24.459,2.252c24.986,46.476,73.105,77.051,125.346,80.593    c4.268,9.29,9.368,18.592,11.208,28.241c-4.606,29.617-12.231,58.557-22.534,86.814c-2.383,6.532-0.249,11.71,3.762,14.949    c0.816,1.664,1.946,3.101,2.889,3.309c24.142,5.32,48.479,8.776,72.62,0.253c2.04-0.722,4.61-4.524,4.725-6.757    c1.958-3.104,2.75-7.058,1.489-11.673c-8.613-31.501-12.754-63.729-12.044-96.096c1.313-5.729,2.623-11.453,3.957-17.177    c0.322-0.122,0.641-0.204,0.967-0.367c19.331-9.601,38.662-19.2,57.993-28.797c0.144,0.131,0.27,0.273,0.416,0.404    c11.551,10.131,28.793,8.363,39.883-1.302c12.162-10.608,10.049-29.494,1.008-40.996c-10.266-13.064-30.927-11.036-42.249-1.171    c-0.946,0.828-1.604,1.714-2.109,2.624c-0.604,0.555-1.179,1.175-1.685,1.941c-4.252,6.426-5.598,14.268-4.317,21.652    c-0.212,0.09-0.424,0.135-0.636,0.241c-14.415,7.156-28.825,14.312-43.24,21.473c1.746-6.561,3.578-13.093,5.646-19.551    c1.021-3.187,2.114-6.345,3.244-9.49c27.973-33.868,69.217-53.574,113.354-54.591c0.126-0.004,0.232-0.036,0.354-0.045    c0.751,6.275,3.146,12.457,7.435,17.683c12.799,15.599,38.213,19.891,54.121,6.386c15.304-12.991,19-38.707,5.32-54.309    c-14.57-16.615-40.07-17.01-56.223-2.656c-2.387,2.121-3.239,4.59-3.06,6.952c-1.894,2.195-3.469,4.627-4.688,7.25    c-0.979-0.31-2.04-0.518-3.26-0.489c-32.991,0.759-63.946,10.686-90.38,28.119c4.194-5.908,8.857-11.562,14.125-16.892    c29.571-29.914,64.142-52.432,101.437-71.017c5.981-2.982,14.174-3.656,20.906-2.603c18.617,2.913,35.838-3.925,44.235-19.253    c8.041-14.68,5.504-34.876-5.888-46.793C531.373,168.096,511.74,165.077,496.032,173.518z',
-          fill: 'white',
-          scale: {
-            x: 1.6,
-            y: 1.6
-          }
-        }
+        configCore: {}
       }
     },
     methods: {
-      handleDragstart (starComponent) {
-        const shape = starComponent.getStage()
+      handleDragstart (leafComponent) {
+        const shape = leafComponent.getStage()
         const dragLayer = vm.$refs.dragLayer.getStage()
         const stage = vm.$refs.stage.getStage()
         // moving to another layer will improve dragging performance
         shape.moveTo(dragLayer)
         stage.draw()
-        starComponent.config.shadowOffsetX = 15
-        starComponent.config.shadowOffsetY = 15
-        starComponent.config.scaleX = starComponent.config.startScale * 1.2
-        starComponent.config.scaleY = starComponent.config.startScale * 1.2
+        leafComponent.config.shadowOffsetX = 15
+        leafComponent.config.shadowOffsetY = 15
+        leafComponent.config.scaleX = leafComponent.config.startScale * 1.2
+        leafComponent.config.scaleY = leafComponent.config.startScale * 1.2
       },
-      handleDragend (starComponent) {
-        const shape = starComponent.getStage()
+      handleDragend (leafComponent) {
+        const shape = leafComponent.getStage()
         const layer = vm.$refs.layer.getStage()
         const stage = vm.$refs.stage.getStage()
         shape.moveTo(layer)
@@ -70,27 +67,117 @@
         shape.to({
           duration: 0.5,
           easing: Konva.Easings.ElasticEaseOut,
-          scaleX: starComponent.config.startScale,
-          scaleY: starComponent.config.startScale,
+          scaleX: leafComponent.config.startScale,
+          scaleY: leafComponent.config.startScale,
           shadowOffsetX: 5,
           shadowOffsetY: 5
         })
+      },
+      randomizeOpacity (r, g, b) {
+        r += Math.max(0, Math.min(255, 50 - Math.floor(Math.random() * 100)))
+        g += Math.max(0, Math.min(255, 50 - Math.floor(Math.random() * 100)))
+        b += Math.max(0, Math.min(255, 50 - Math.floor(Math.random() * 100)))
+        let a = Math.random() * 0.6 + 0.4
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
+      },
+      makeLeaf (ctx, x, y, angle, newAngle) {
+        this.branch(ctx, x, y, 0, 0, angle, 0, 1, newAngle, true)
+      },
+      branch (ctx, x, y, thick, len, angle, iterations, i, a, leaf) {
+        ctx.lineWidth = thick
+        ctx.lineCap = 'round'
+        ctx.strokeStyle = 'saddlebrown'
+        ctx.beginPath()
+        ctx.moveTo(x, hei - y)
+        i = i || 0
+        a = a || 0
+        leaf = leaf || false
+        if (leaf) {
+          len = 5
+          ctx.lineWidth = 3
+          if (season === 'spring') {
+            // pink, green
+            ctx.strokeStyle = Math.random() * 5 > 3 ? this.randomizeOpacity(255, 192, 203) : this.randomizeOpacity(0, 128, 0)
+          } else if (season === 'summer') {
+            // green
+            ctx.strokeStyle = this.randomizeOpacity(0, 128, 0)
+          } else if (season === 'fall') {
+            // orange, red, yellow
+            let fallColors = [this.randomizeOpacity(255, 165, 0), this.randomizeOpacity(255, 0, 0), this.randomizeOpacity(255, 165, 0)]
+            ctx.strokeStyle = Math.random() * 15 < 13 ? 'transparent' : fallColors[Math.floor(Math.random() * fallColors.length)]
+          } else {
+            ctx.strokeStyle = 'transparent'
+          }
+          // this is an actual thing.
+          ctx.lineCap = 'butt'
+        }
+        let newLen = (i === 0 || leaf) ? len : len * (0.5 + Math.random() * 0.6)
+        let dX = x + (newLen * Math.sin(a * degToRad))
+        let dY = y + (newLen * Math.cos(a * degToRad))
+        ctx.lineTo(dX, hei - dY)
+        let it = 3 + Math.floor(Math.random() * iterations)
+        if (!leaf && i >= it) {
+          ctx.lineWidth = Math.min(1, ctx.lineWidth)
+        }
+        ctx.stroke()
+        a += 10 - (Math.random() * 20)
+        if (!leaf && i < it) {
+          let priority = Math.random() * 2 > 1 ? -1 : 1
+          this.branch(ctx, dX, dY, Math.max(0.2, thick * 0.7), len * 0.85, angle, iterations, i + 1, a + priority * angle)
+          this.branch(ctx, dX, dY, Math.max(0.2, thick * 0.7), len * 0.85, angle, iterations, i + 1, a - priority * angle)
+          if (Math.random() * 2 > 1) {
+            this.branch(ctx, x + (dX - x) * 0.4, y + (dY - y) * 0.4, Math.max(0.2, thick * 0.7), len * 0.85, angle, iterations, i + 1, a)
+          }
+          if (i > 1 && Math.random() * 2 > 1) {
+            this.makeLeaf(ctx, x + (dX - x) / 2, y + (dY - y) / 2, angle, 2 * (a + angle))
+          }
+          if (i > 1 && Math.random() * 2 > 1) {
+            this.makeLeaf(ctx, x + (dX - x) / 2, y + (dY - y) / 2, angle, 2 * (a - angle))
+          }
+        } else if (!leaf) {
+          this.makeLeaf(ctx, dX, dY, angle, 2 * a + angle)
+          this.makeLeaf(ctx, dX, dY, angle, 2 * a - angle)
+          this.makeLeaf(ctx, dX, dY, angle, a)
+        }
+      },
+      checkFall (ctx) {
+        if (season === 'fall') {
+          for (let i = 0; i < 500; i++) {
+            ctx.beginPath()
+            let colors = [this.randomizeOpacity(255, 165, 0), this.randomizeOpacity(255, 0, 0), this.randomizeOpacity(255, 165, 0)]
+            ctx.strokeStyle = colors[Math.floor(Math.random() * colors.length)]
+            ctx.lineWidth = 3
+            let x = Math.random() * wid
+            let y = hei - Math.random() * 20
+            ctx.moveTo(x, y)
+            ctx.lineTo(x + 5, y)
+            ctx.stroke()
+          }
+        }
       }
     },
     mounted () {
       vm = this
+      const stage = vm.$refs.stage.getStage()
+      vm.configCore = {
+        sceneFunc: function (context) {
+          vm.checkFall(context._context)
+          vm.branch(context._context, wid / 2, 5, 15, 100, 20 + Math.random() * 5, 15 + Math.floor(Math.random() * 5))
+          // Konva specific method
+        },
+        scaleX: 1.8,
+        scaleY: 1.8
+      }
       for (let n = 0; n < 300; n++) {
-        const scale = 1
-        const stage = vm.$refs.stage.getStage()
-        vm.list.push({
+        vm.leafPaths.push({
           x: Math.random() * stage.getWidth(),
           y: Math.random() * stage.getHeight(),
           data: 'M18.014,9.564c-1.439,0.523-2.348,1.874-2.244,3.351l0.035,0.57l-0.576-0.07c-2.094-0.268-3.925-1.175-5.479-2.7   L8.99,9.959l-0.196,0.559c-0.414,1.245-0.149,2.56,0.714,3.445c0.46,0.489,0.356,0.559-0.437,0.268   c-0.276-0.093-0.518-0.163-0.541-0.128c-0.08,0.082,0.196,1.14,0.414,1.559c0.299,0.582,0.909,1.152,1.577,1.49l0.564,0.268   l-0.667,0.012c-0.644,0-0.667,0.012-0.598,0.257c0.23,0.756,1.139,1.559,2.152,1.909l0.714,0.244l-0.621,0.372   c-0.921,0.536-2.003,0.838-3.085,0.861c-0.519,0.012-0.944,0.058-0.944,0.093c0,0.116,1.405,0.767,2.221,1.024   c2.451,0.756,5.364,0.43,7.551-0.861c1.554-0.92,3.107-2.746,3.833-4.516c0.392-0.942,0.783-2.665,0.783-3.49   c0-0.536,0.035-0.605,0.679-1.245c0.38-0.372,0.737-0.779,0.806-0.896c0.115-0.221,0.103-0.221-0.483-0.024   c-0.978,0.349-1.117,0.303-0.633-0.221c0.356-0.372,0.783-1.047,0.783-1.245c0-0.035-0.172,0.023-0.369,0.128   c-0.207,0.116-0.667,0.291-1.013,0.395l-0.621,0.198l-0.564-0.385c-0.311-0.209-0.748-0.442-0.978-0.512   C19.442,9.355,18.544,9.378,18.014,9.564z',
           fill: '#1dcaff',
           opacity: 0.80,
           draggable: true,
-          scaleX: scale,
-          scaleY: scale,
+          scaleX: 1,
+          scaleY: 1,
           shadowColor: 'white',
           shadowBlur: 50,
           shadowOffsetX: 0,

@@ -12,7 +12,8 @@ export default {
 
 <style>
 #app {
-  background: black;
+  background-image: url("./assets/mountains.jpg");
   margin: -8px;
+  overflow: hidden;
 }
 </style>

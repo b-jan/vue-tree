@@ -11,9 +11,12 @@ export default {
 </script>
 
 <style>
+html {
+  overflow: hidden;
+}
+
 #app {
   background-image: url("./assets/mountains.jpg");
   margin: -8px;
-  overflow: hidden;
 }
 </style>

@@ -183,7 +183,7 @@
           shadowOffsetX: 0,
           shadowOffsetY: 0,
           shadowOpacity: 0.8,
-          startScale: scale
+          startScale: 1
         })
       }
     }

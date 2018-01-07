@@ -1,11 +1,12 @@
 <template>
   <div>
+    <div class="navbar">
+
+    </div>
+
     <v-stage
       ref="stage"
       :config="configKonva"
-      @mouseover="handleDragstart"
-      @mouseout="handleDragend"
-      @click="handleDragend"
     >
       <v-layer ref="treeLayer">
         <v-shape
@@ -21,6 +22,10 @@
       </v-layer>
       <v-layer ref="dragLayer"></v-layer>
     </v-stage>
+
+    <div class="sidebar">
+      <p>{{ focusLeaf }}</p>
+    </div>
   </div>
 </template>
 
@@ -38,6 +43,7 @@
   export default {
     data () {
       return {
+        focusLeaf: 'OK',
         leafPaths: [],
         configKonva: {
           width: windowWidth,
@@ -196,4 +202,20 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .navbar {
+    background-color: #333;
+    height: 72px;
+    padding-left: 24px;
+    padding-right: 44px;
+  }
+
+  .sidebar {
+    background-color: #333;
+    color: #FFF;
+    position: absolute;
+    top: calc(72px + 24px);
+    left: 24px;
+    width: 225px;
+    height: calc(100vh - 72px - 24px - 24px);
+  }
 </style>
